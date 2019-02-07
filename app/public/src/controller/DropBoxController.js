@@ -32,12 +32,12 @@ class DropBoxController {
 
     uploadTask(files) { // 3 // recibir los archivos
 
-        let promise = []; // cada archivo va tener una promesa
+        let promises = []; // cada archivo va tener una promesa
 
         //insertar los archivos dentre de las promise
         [...files].forEach(file => {
 
-            promise.push(new Promise((resolve, reject) => {
+            promises.push(new Promise((resolve, reject) => {
 
                 let ajax = new XMLHttpRequest();
 
@@ -47,7 +47,7 @@ class DropBoxController {
 
                     try {
 
-                        resolve(JSON.parse(ajax.responseText));
+                        resolve(JSON.parse(ajax.responseText)); // respuesta dentro del servidor
 
                     } catch(e) {
 
@@ -63,9 +63,9 @@ class DropBoxController {
 
                 };
 
-                let formdata = new FormData();
+                let formData = new FormData();
 
-                formData.append('input-file', 'file'); // append para juntar
+                formData.append('input-file', file); // append para juntar
 
                 ajax.send(formData);
 
@@ -73,7 +73,7 @@ class DropBoxController {
 
         });
 
-        return Promise.all(promise);
+        return Promise.all(promises);
 
     }
 }
