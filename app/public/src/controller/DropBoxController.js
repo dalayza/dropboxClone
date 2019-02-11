@@ -360,12 +360,15 @@ class DropBoxController {
 
         let li = document.createElement('li');
 
-        li.dataset.set = key;
+        li.dataset.key = key;
 
         li.innerHTML = `
             ${this.getFileIconView(file)}
             <div class="name text-center">${file.name}</div>
         `
+
+        this.initEvensli();
+
         return li;
 
     }
@@ -385,6 +388,17 @@ class DropBoxController {
                 this.listFilesEl.appendChild(this.getFileView(data, key));
 
             });
+
+        });
+
+    }
+
+
+    initEvensli(li) { // mudar css cuando selecciona un archivo
+
+        li.addEventListener('click', e => {
+
+            li.classList.toggle('selected');
 
         });
 
