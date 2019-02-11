@@ -398,7 +398,52 @@ class DropBoxController {
 
         li.addEventListener('click', e => {
 
-            li.classList.toggle('selected');
+            if (e.shiftkey) { // shiftkey: shift presionado
+
+                let firstLi = this.listFilesEl.querySelector('selected'); // primer li que clicamos
+
+                if (firstLi) {
+
+                    let indexStart;
+                    let indexEnd;
+
+                    li.parentElement.childNodes.forEach((el, index) => {
+
+                        if (firstLi === el) indexStart = index;
+
+                        if (li === el) indexEnd = index;
+
+                    });
+
+                    let index = [indexStart, indexEnd].sort(); //toma los elementos del arreglo para seleccion con shift
+
+                    li.parentElement.childNodes.forEach((el, i) => {
+
+                        if (i >= index[0] && i <= index[1]) {
+
+                            el.classList.add('selected');
+
+                        }
+
+                    });
+
+                    return true;
+
+                }
+
+                // ultimo li que clicamos
+
+            }
+
+            if (!e.ctrlKey) { // ctrlKey: control presionado
+
+                this.listFilesEl.querySelectorAll('li.selected').forEach(el => {
+
+                    el.classList.remove('selected');
+
+                });
+
+            }
 
         });
 
