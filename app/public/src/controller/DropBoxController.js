@@ -9,6 +9,10 @@ class DropBoxController {
         this.nameFileEl = this.snackModalEl.querySelector('.filename'); // nombre del archivo
         this.timeleftEl = this.snackModalEl.querySelector('.timeleft'); // tiempo en ejecucion
         this.listFilesEl = document.querySelector('#list-of-files-and-directories'); // listar archivo
+        this.onselectionchange = new Event('selectionchange'); // evento personalizado
+        this.btnNewFolder = document.querySelector('#btn-new-folder'); // boton nueva carpeta
+        this.btnRename = document.querySelector('#btn-rename'); // boton delete
+        this.btnDelete = document.querySelector('#btn-delete'); // boton delete
 
         this.connectFirebase(); // conexion a la base de datos
         this.initEvent(); // iniciar evento para json
@@ -32,7 +36,33 @@ class DropBoxController {
     }
 
 
+    getSelection() { // seleccion de elementos
+
+        return this.listFilesEl.querySelectorAll('.selected');
+
+    }
+
+
     initEvent() { // 2 // inicio los eventos
+
+        this.listFilesEl.addEventListener('selectionchange', e => {
+
+            switch (this.getSelection().length) {
+
+                case 0:
+                    this.btnDelete.style.display = 'none';
+                    this.btnRename.style.display = 'none';
+                    break;
+                case 1:
+                this.btnDelete.style.display = 'block';
+                this.btnRename.style.display = 'block';
+                    break;
+                default:
+                    this.btnDelete.style.display = 'block';
+                    this.btnRename.style.display = 'none';
+            }
+
+        });
 
         this.btnSendFileEl.addEventListener('click', event => {
 
@@ -398,9 +428,10 @@ class DropBoxController {
 
         li.addEventListener('click', e => {
 
-            if (e.shiftkey) { // shiftkey: shift presionado
+            // shiftkey: shift presionado
+            if (e.shiftkey) { 
 
-                let firstLi = this.listFilesEl.querySelector('selected'); // primer li que clicamos
+                let firstLi = this.listFilesEl.querySelector('.selected'); // primer li que clicamos
 
                 if (firstLi) {
 
@@ -427,6 +458,9 @@ class DropBoxController {
 
                     });
 
+                    // aviso evento de la seleccion tomada // evento personalizado "selectionchange"
+                    this.listFilesEl.dispatchEvent(this.onselectionchange);
+
                     return true;
 
                 }
@@ -444,6 +478,11 @@ class DropBoxController {
                 });
 
             }
+
+            li.classList.toggle('selected');
+
+            // aviso evento de la seleccion tomada // evento personalizado "selectionchange"
+            this.listFilesEl.dispatchEvent(this.onselectionchange);
 
         });
 
