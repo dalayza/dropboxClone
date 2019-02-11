@@ -8,9 +8,11 @@ class DropBoxController {
         this.progressBarEl = this.snackModalEl.querySelector('.mc-progress-bar-fg'); // barra de progreso
         this.nameFileEl = this.snackModalEl.querySelector('.filename'); // nombre del archivo
         this.timeleftEl = this.snackModalEl.querySelector('.timeleft'); // tiempo en ejecucion
+        this.listFilesEl = document.querySelector('#list-of-files-and-directories'); // listar archivo
 
-        this.connectFirebase();
-        this.initEvent();
+        this.connectFirebase(); // conexion a la base de datos
+        this.initEvent(); // iniciar evento para json
+        this.readFiles(); // listado de contenido
 
     }
 
@@ -150,7 +152,7 @@ class DropBoxController {
 
     }
 
-    uploadProgress(event, file) {
+    uploadProgress(event, file) { // 4
 
         let timespent = Date.now() - this.startUploadTime; // tiempo que gasto
 
@@ -170,7 +172,7 @@ class DropBoxController {
 
     }
 
-    formatTimeToHuman(duration) { // convertir el tiempo restante en tiempo humano
+    formatTimeToHuman(duration) { // 4 convertir el tiempo restante en tiempo humano
 
         let seconds = parseInt((duration / 1000) % 60);
         let minutes = parseInt(duration / (1000 / 60)) % 60;
@@ -193,7 +195,7 @@ class DropBoxController {
     };
 
 
-    getFileIconView() {// tratar el icono del archivo a cargar
+    getFileIconView() { // 4 // tratar el icono del archivo a cargar
 
         switch (file.type) {
 
@@ -354,14 +356,37 @@ class DropBoxController {
     }
 
 
-    getFileView(file) { // ver el tipo de archivo por el MIME
+    getFileView(file, key) { // ver el tipo de archivo por el MIME de firebase
 
-        return `
-            <li>
-                ${this.getFileIconView(file)}
-                <div class="name text-center">${this.name}</div>
-            </li>
-        `;
+        let li = document.createElement('li');
+
+        li.dataset.set = key;
+
+        li.innerHTML = `
+            ${this.getFileIconView(file)}
+            <div class="name text-center">${file.name}</div>
+        `
+        return li;
+
+    }
+
+
+    readFiles() { // 5 // listar archivo por el MIME de firebase
+
+        this.getFirebaseRef().on('value', snapshot => {
+
+            this.listFilesEl.innerHTML = '';
+
+            snapshot.forEach(snapshotItem => {
+
+                let key = snapshotItem.key;
+                let data = snapshotItem.val();
+
+                this.listFilesEl.appendChild(this.getFileView(data, key));
+
+            });
+
+        });
 
     }
 
